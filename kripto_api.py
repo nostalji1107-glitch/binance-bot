@@ -21,7 +21,6 @@ if df is None or len(df) < atr_period + 2:
         return df
 
     df = df.copy()
-    # 1. ATR (Average True Range) Hesaplama
     high_low = df['high'] - df['low']
     high_close = np.abs(df['high'] - df['close'].shift())
     low_close = np.abs(df['low'] - df['close'].shift())
