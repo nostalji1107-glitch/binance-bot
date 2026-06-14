@@ -16,9 +16,9 @@ model = genai.GenerativeModel('gemini-pro')
 
 # --- UT BOT ALERTS MATEMATİKSEL HESAPLAMASI ---
 def ut_bot_alerts(df, key_value=1, atr_period=10):
-    if df is None or len(df) < atr_period + 2:
-        print("⚠️ Yetersiz veya boş veri geldi, indikatör hesaplanamadı.")
-        return df
+    if df is None or len(df) < (atr_period + 5):
+        print("⚠️ Yetersiz veri (Min 15 satır gerekli). İndikatör hesaplanamadı, döngü atlanıyor.")
+        return None
 
     df = df.copy()
     high_close = np.abs(df['high'] - df['close'].shift())
