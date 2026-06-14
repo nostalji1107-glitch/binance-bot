@@ -16,12 +16,11 @@ model = genai.GenerativeModel('gemini-pro')
 
 # --- UT BOT ALERTS MATEMATİKSEL HESAPLAMASI ---
 def ut_bot_alerts(df, key_value=1, atr_period=10):
-    if df is None or len(df) < atr_period + 2:
+if df is None or len(df) < atr_period + 2:
         print("⚠️ Yetersiz veya boş veri geldi, indikatör hesaplanamadı.")
         return df
 
-   df = df.copy()
-    
+    df = df.copy()
     # 1. ATR (Average True Range) Hesaplama
     high_low = df['high'] - df['low']
     high_close = np.abs(df['high'] - df['close'].shift())
