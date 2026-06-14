@@ -10,7 +10,7 @@ import google.generativeai as genai
 app = FastAPI()
 
 # --- YAPAY ZEKA AYARI ---
-GOOGLE_API_KEY = AQ.Ab8RN6LAMOMQpw7MrQEiMgVOiEk52j5YBlTZSFnWe6OrZTf9uQ
+GOOGLE_API_KEY = "AQ.Ab8RN6LAMOMQpw7MrQEiMgVOiEk52j5YBlTZSFnWe6OrZTf9uQ"
 genai.configure(api_key=GOOGLE_API_KEY)
 model = genai.GenerativeModel('gemini-pro')
 
