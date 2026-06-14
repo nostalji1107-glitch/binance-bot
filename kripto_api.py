@@ -15,7 +15,9 @@ genai.configure(api_key=GOOGLE_API_KEY)
 model = genai.GenerativeModel('gemini-pro')
 
 # --- UT BOT ALERTS MATEMATİKSEL HESAPLAMASI ---
-def ut_bot_alerts(df, key_value=1, atr_period=10):
+if df is None or len(df) < atr_period + 2:
+        print("⚠️ Yetersiz veya boş veri geldi, indikatör hesaplanamadı.")
+        return df def ut_bot_alerts(df, key_value=1, atr_period=10):
     """
     TradingView UT Bot Alerts indikatörünün Python (Pandas) uyarlaması.
     """
