@@ -75,4 +75,63 @@ def ut_bot_alerts(df, key_value=1, atr_period=10):
     return df
 
 # --- BINANCE'DEN CANLI VERİ ÇEKME ---
-def get_binance_data
+def get_binance_data(symbol="BTCUSDT", interval="15m", limit=200):
+    url = f"https://api.binance.com/api/v3/klines?symbol={symbol}&interval={interval}&limit={limit}"
+    response = requests.get(url).json()
+    
+    df = pd.DataFrame(response, columns=[
+        'open_time', 'open', 'high', 'low', 'close', 'volume',
+        'close_time', 'quote_asset_volume', 'number_of_trades',
+        'taker_buy_base_asset_volume', 'taker_buy_quote_asset_volume', 'ignore'
+    ])
+    
+    df['high'] = df['high'].astype(float)
+    df['low'] = df['low'].astype(float)
+    df['close'] = df['close'].astype(float)
+    return df
+
+# --- BOTUN ANA ÇALIŞMA DÖNGÜSÜ ---
+async def bot_islem_dovusu():
+    son_sinyal = None
+    print("🤖 Bağımsız Bot Döngüsü Başlatıldı. 15 dakikada bir kontrol edilecek...")
+    
+    while True:
+        try:
+            coin = "BTCUSDT"
+            periyot = "15m"
+            
+            df = get_binance_data(symbol=coin, interval=periyot, limit=200)
+            df_with_signals = ut_bot_alerts(df, key_value=1, atr_period=10)
+            
+            if df_with_signals is None:
+                print("⚠️ İndikatör tablosu boş döndü, 60 saniye sonra tekrar denenecek...")
+                await asyncio.sleep(60)
+                continue
+                
+            guncel_satir = df_with_signals.iloc[-1]
+            guncel_sinyal = guncel_satir['signal']
+            guncel_fiyat = guncel_satir['close']
+            
+            if guncel_sinyal in ["AL", "SAT"] and guncel_sinyal != son_sinyal:
+                son_sinyal = guncel_sinyal
+                print(f"🚨 YENİ SİNYAL ÜRETİLDİ! -> {coin} | {guncel_sinyal} | Fiyat: {guncel_fiyat}")
+                
+                prompt = f"Kripto para {coin} için {periyot} grafiklerinde UT Bot Alerts indikatörü fiyata göre yeni bir {guncel_sinyal} sinyali üretti. Güncel fiyat: {guncel_fiyat}. Bu sinyali teknik olarak yorumla, Binance üzerinde bu işleme girmeli miyim? Kısa ve net bir yanıt üret."
+                response = model.generate_content(prompt)
+                ai_yorum = response.text
+                print(f"🤖 Gemini Yapay Zeka Yorumu:\n{ai_yorum}")
+                
+                print(f"🛒 [Binance Simülasyonu] {coin} için {guncel_sinyal} emri gönderildi!")
+                
+        except Exception as e:
+            print(f"❌ Döngü sırasında bir hata oluştu: {str(e)}")
+            
+        await asyncio.sleep(60)
+
+@app.on_event("startup")
+async def startup_event():
+    asyncio.create_task(bot_islem_dovusu())
+
+@app.get("/")
+def home():
+    return {"durum": "Bot arka planda tıkır tıkır çalışıyor ve Binance'i tarıyor!"}
