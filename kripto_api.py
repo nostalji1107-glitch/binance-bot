@@ -75,29 +75,4 @@ def ut_bot_alerts(df, key_value=1, atr_period=10):
     return df
 
 # --- BINANCE'DEN CANLI VERİ ÇEKME ---
-def get_binance_data(symbol="BTCUSDT", interval="15m", limit=200):  # Güvenli analiz için mum limiti 200'e çıkarıldı
-    url = f"https://api.binance.com/api/v3/klines?symbol={symbol}&interval={interval}&limit={limit}"
-    response = requests.get(url).json()
-    
-    df = pd.DataFrame(response, columns=[
-        'open_time', 'open', 'high', 'low', 'close', 'volume',
-        'close_time', 'quote_asset_volume', 'number_of_trades',
-        'taker_buy_base_asset_volume', 'taker_buy_quote_asset_volume', 'ignore'
-    ])
-    
-    df['high'] = df['high'].astype(float)
-    df['low'] = df['low'].astype(float)
-    df['close'] = df['close'].astype(float)
-    return df
-
-# --- BOTUN ANA ÇALIŞMA DÖNGÜSÜ ---
-async def bot_islem_dovusu():
-    son_sinyal = None
-    print("🤖 Bağımsız Bot Döngüsü Başlatıldı. 15 dakikada bir kontrol edilecek...")
-    
-    while True:
-        try:
-            coin = "BTCUSDT"
-            periyot = "15m"
-            
-            df = get_binance_data(symbol=coin, interval=periyot, limit=20
+def get_binance_data
